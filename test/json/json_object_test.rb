@@ -16,12 +16,11 @@ class JsonObjectTest < ActiveSupport::TestCase
   end
 
   test 'collection' do
-    suites = []
-    (1..5).each do |i|
+    suites = (1..5).map do |i|
       suite = Suite.new
       suite.id = i
       suite.name = 'name'
-      suites.push suite
+      suite
     end
 
     json = JsonObject.new(suites).json
