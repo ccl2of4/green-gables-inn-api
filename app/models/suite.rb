@@ -1,0 +1,2 @@
+class Suite < ApplicationRecord
+end
