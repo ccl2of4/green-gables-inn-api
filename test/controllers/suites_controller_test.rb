@@ -1,6 +1,7 @@
 require 'test_helper'
 
 class SuitesControllerTest < ActionDispatch::IntegrationTest
+
   test 'get suites' do
     get '/suites'
     assert_response :success
@@ -29,6 +30,34 @@ class SuitesControllerTest < ActionDispatch::IntegrationTest
     assert output['data']['attributes'].kind_of? Hash
     assert_not_nil output['data']['id']
     assert output['data']['attributes']['name'] == input.json['data']['attributes']['name']
+  end
+
+  test 'update suite' do
+    get '/suites'
+    suite = JSON.parse(response.body)
+    suite['data'][0]['attributes']['name'] = 'new name!'
+    suite['data'] = suite['data'][0]
+    id = suite['data']['id']
+
+    patch "/suites/#{id}", params:suite
+    assert_response :success
+    json = JSON.parse(response.body)
+    assert json['data']['attributes']['name'] == 'new name!'
+  end
+
+  test 'destroy suite' do
+    get '/suites'
+    suite = JSON.parse(response.body)
+    suite['data'][0]['attributes']['name'] = 'new name!'
+    suite['data'] = suite['data'][0]
+    id = suite['data']['id']
+
+    delete "/suites/#{id}", params:suite
+    assert_response :no_content
+
+    assert_raises ActiveRecord::RecordNotFound do
+      get "/suites/#{id}"
+    end
   end
 
 end

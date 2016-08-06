@@ -17,9 +17,10 @@ class SuitesController < ApplicationController
   end
   def update
     @suite = Suite.find(params[:id])
-    @suite.update(params.require(:suite).permit(:name, :description, :price))
+    @suite.update(params.require(:data).require(:attributes).permit(:name, :description, :price))
     @suite.save
-    render json:@suite
+    @json = JsonObject.new @suite
+    render json:@json
   end
   def destroy
     @suite = Suite.find(params[:id])
