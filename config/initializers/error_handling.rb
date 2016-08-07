@@ -10,10 +10,11 @@ class ErrorHandling
   rescue Exception => exception
     backtrace_cleaner = request.get_header('action_dispatch.backtrace_cleaner')
     wrapper = ActionDispatch::ExceptionWrapper.new(backtrace_cleaner, exception)
-    return_error_response(request, wrapper)
+    log_error(request, wrapper)
+    error_response(request, wrapper)
   end
 
-  def return_error_response(request, wrapper)
+  def error_response(request, wrapper)
     body = {
       errors: [{
         status: wrapper.status_code,
@@ -43,6 +44,37 @@ class ErrorHandling
 
   def render(status, body, format)
     [status, {'Content-Type' => "#{format}; charset=#{ActionDispatch::Response.default_charset}", 'Content-Length' => body.bytesize.to_s}, [body]]
+  end
+
+  def log_error(request, wrapper)
+    logger = logger(request)
+    return unless logger
+
+    exception = wrapper.exception
+
+    trace = wrapper.application_trace
+    trace = trace[0...trace.length-1]
+    trace = wrapper.framework_trace if trace.empty?
+
+    ActiveSupport::Deprecation.silence do
+      logger.fatal "  "
+      logger.fatal "#{exception.class} (#{exception.message}):"
+      log_array logger, exception.annoted_source_code if exception.respond_to?(:annoted_source_code)
+      logger.fatal "  "
+      log_array logger, trace
+    end
+  end
+
+  def log_array(logger, array)
+    array.map { |line| logger.fatal line }
+  end
+
+  def logger(request)
+    request.logger || ActionView::Base.logger || stderr_logger
+  end
+
+  def stderr_logger
+    @stderr_logger ||= ActiveSupport::Logger.new($stderr)
   end
 
 end
