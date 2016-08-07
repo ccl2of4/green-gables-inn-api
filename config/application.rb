@@ -1,4 +1,5 @@
 require_relative 'boot'
+require_relative 'initializers/error_handling'
 
 require "rails"
 # Pick the frameworks you want:
@@ -26,5 +27,8 @@ module GreenGablesInnApi
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+    config.middleware.delete ActionDispatch::ShowExceptions
+    config.middleware.delete ActionDispatch::DebugExceptions
+    config.middleware.use    ErrorHandling
   end
 end
