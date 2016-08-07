@@ -20,7 +20,7 @@ class ErrorHandling
         title: Rack::Utils::HTTP_STATUS_CODES.fetch(
           wrapper.status_code,
           Rack::Utils::HTTP_STATUS_CODES[500]),
-        detail: wrapper.exception.inspect
+        detail: wrapper.exception.message
       }],
 
       #exception: wrapper.exception.inspect,
