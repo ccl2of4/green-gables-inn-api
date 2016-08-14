@@ -5,4 +5,3 @@ services:
   - postgresql
 before_script:
   - psql -c 'create database green_gables_test;' -U postgres
-  - psql -c 'create database green_gables_heroku;' -U postgres
