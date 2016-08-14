@@ -5,7 +5,7 @@
 ## Initial Setup
 
 * Install PostgreSQL, enable any necessary system services, and add yourself as a user
-  `createuser --interactive`
+  - `createuser --interactive`
 * Install `rails`
   - `gem install rails`
 * Install the dependencies for the application
