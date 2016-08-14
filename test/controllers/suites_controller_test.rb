@@ -55,9 +55,8 @@ class SuitesControllerTest < ActionDispatch::IntegrationTest
     delete "/suites/#{id}", params:suite
     assert_response :no_content
 
-    assert_raises ActiveRecord::RecordNotFound do
-      get "/suites/#{id}"
-    end
+    get "/suites/#{id}"
+    assert_response :not_found
   end
 
 end
