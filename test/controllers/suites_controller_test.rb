@@ -9,6 +9,17 @@ class SuitesControllerTest < ActionDispatch::IntegrationTest
     assert json['data'].length == 2
   end
 
+  test 'check attributes' do
+    get '/suites'
+    json = JSON.parse(response.body)
+    attrs = json['data'][0]['attributes']
+    assert_not_nil attrs['name']
+    assert_not_nil attrs['price']
+    assert_not_nil attrs['created_at']
+    assert_not_nil attrs['updated_at']
+    assert attrs.size == 4
+  end
+
   test 'get suite' do
     get '/suites'
     id = JSON.parse(response.body)['data'][0]['id']
