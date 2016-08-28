@@ -27,8 +27,7 @@ class ClientsControllerTest < ActionDispatch::IntegrationTest
 
     get "/clients/#{id}"
     assert_response :success
-    json = JSON.parse(response.body)
-    assert json['data']['id'] == id
+    assert get_id(response) == id
   end
 
   test 'create client' do
@@ -39,13 +38,16 @@ class ClientsControllerTest < ActionDispatch::IntegrationTest
     input = JsonObject.new client
     post '/clients', params:input.json
     assert_response :success
-    output = JSON.parse(response.body)
-    assert output['data'].kind_of? Hash
-    assert output['data']['attributes'].kind_of? Hash
-    assert_not_nil output['data']['id']
-    assert output['data']['attributes']['name'] == input.json['data']['attributes']['name']
-    assert output['data']['attributes']['email_address'] == input.json['data']['attributes']['email_address']
-    assert output['data']['attributes']['phone_number'] == input.json['data']['attributes']['phone_number']
+
+    id = get_id(response)
+    assert_not_nil id
+
+    attrs_out = get_attrs(response)
+    attrs_in = get_attrs(input)
+
+    assert attrs_out['name'] == attrs_in['name']
+    assert attrs_out['email_address'] == attrs_in['email_address']
+    assert attrs_out['phone_number'] == attrs_in['phone_number']
   end
 
   test 'required attributes for create client' do
@@ -55,8 +57,7 @@ class ClientsControllerTest < ActionDispatch::IntegrationTest
     input = JsonObject.new client
     post '/clients', params:input.json
     assert_response :bad_request
-    output = JSON.parse(response.body)
-    assert output['errors'][0]['detail'].include? 'full_name'
+    assert get_error_detail(response, 0).include? 'full_name'
 
     client = Client.new
     client.full_name = 'name'
@@ -64,8 +65,7 @@ class ClientsControllerTest < ActionDispatch::IntegrationTest
     input = JsonObject.new client
     post '/clients', params:input.json
     assert_response :bad_request
-    output = JSON.parse(response.body)
-    assert output['errors'][0]['detail'].include? 'email_address'
+    assert get_error_detail(response, 0).include? 'email_address'
 
     client = Client.new
     client.full_name = 'name'
@@ -73,8 +73,7 @@ class ClientsControllerTest < ActionDispatch::IntegrationTest
     input = JsonObject.new client
     post '/clients', params:input.json
     assert_response :bad_request
-    output = JSON.parse(response.body)
-    assert output['errors'][0]['detail'].include? 'phone_number'
+    assert get_error_detail(response, 0).include? 'phone_number'
   end
 
 end
