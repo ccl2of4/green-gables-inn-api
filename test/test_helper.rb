@@ -6,17 +6,21 @@ class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   fixtures :all
 
-  # Add more helper methods to be used by all tests here...
   def get_json(json)
+    # Input data
     if json.is_a? JsonObject
-      json = json.json
+      json = json.to_json
     end
+    # Output data
     if json.is_a? ActionDispatch::TestResponse
       json = response.body
     end
+    # By this point, json should definitely be a String
     if json.is_a? String
       json = JSON.parse(json)
     end
+    # And now it should be a hash after JSON.parse runs
+    assert json.is_a? Hash
     json
   end
 
@@ -31,9 +35,14 @@ class ActiveSupport::TestCase
   def get_errors(json)
     get_json(json)['errors']
   end
-  
+
   def get_error_detail(json, i)
     get_json(json)['errors'][i]['detail']
+  end
+
+  # Gets the Unix timestamp representation of the input string (date)
+  def get_timestamp(string)
+    DateTime.parse(string).to_i
   end
 
 end

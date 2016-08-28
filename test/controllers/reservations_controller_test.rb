@@ -12,6 +12,7 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
     reservation.comment = 'a comment'
     input = JsonObject.new reservation
     post '/reservations', params:input.json
+
     assert_response :success
 
     id = get_id(response)
@@ -20,13 +21,14 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
     attrs_in  = get_attrs(input)
     attrs_out = get_attrs(response)
 
-    assert attrs_out['suite_id']          == attrs_in['suite_id']
-    assert attrs_out['client_id']         == attrs_in['client_id']
-    assert attrs_out['number_of_people']  == attrs_in['number_of_people']
-    assert attrs_out['comments']          == attrs_in['comments']
-
-    # TODO: Figure out how to handle and test dates
-
+    assert attrs_out['suite_id']                  == attrs_in['suite_id']
+    assert attrs_out['client_id']                 == attrs_in['client_id']
+    assert attrs_out['number_of_people']          == attrs_in['number_of_people']
+    assert attrs_out['comments']                  == attrs_in['comments']
+    assert get_timestamp(attrs_out['start_date']) ==
+      get_timestamp(attrs_in['start_date'])
+    assert get_timestamp(attrs_out['end_date'])   ==
+      get_timestamp(attrs_in['end_date'])
   end
 
 end
