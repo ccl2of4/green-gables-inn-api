@@ -10,7 +10,11 @@ class ClientsController < ApplicationController
     render json:@json
   end
   def create
-    @client = Client.new(params.require(:data).require(:attributes).require([:full_name, :email_address, :phone_number]))
+    args = params.require(:data).require(:attributes).permit([:full_name, :email_address, :phone_number])
+    args.tap do |attrs|
+      attrs.require([:full_name, :email_address, :phone_number])
+    end
+    @client = Client.new(args)
     @client.save
     @json = JsonObject.new @client
     render json:@json

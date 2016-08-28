@@ -46,7 +46,35 @@ class ClientsControllerTest < ActionDispatch::IntegrationTest
     assert output['data']['attributes']['name'] == input.json['data']['attributes']['name']
     assert output['data']['attributes']['email_address'] == input.json['data']['attributes']['email_address']
     assert output['data']['attributes']['phone_number'] == input.json['data']['attributes']['phone_number']
+  end
 
+  test 'required attributes for create client' do
+    client = Client.new
+    client.email_address = 'email'
+    client.phone_number = 'phone'
+    input = JsonObject.new client
+    post '/clients', params:input.json
+    assert_response :bad_request
+    output = JSON.parse(response.body)
+    assert output['errors'][0]['detail'].include? 'full_name'
+
+    client = Client.new
+    client.full_name = 'name'
+    client.phone_number = 'phone'
+    input = JsonObject.new client
+    post '/clients', params:input.json
+    assert_response :bad_request
+    output = JSON.parse(response.body)
+    assert output['errors'][0]['detail'].include? 'email_address'
+
+    client = Client.new
+    client.full_name = 'name'
+    client.email_address = 'email'
+    input = JsonObject.new client
+    post '/clients', params:input.json
+    assert_response :bad_request
+    output = JSON.parse(response.body)
+    assert output['errors'][0]['detail'].include? 'phone_number'
   end
 
 end
