@@ -1,5 +1,6 @@
 class ReservationsController < ApplicationController
 
+  # Creates a new reservation with accepted=false
   def create
     attrs = get_reservation_attrs(params)
     @reservation = Reservation.new(attrs)
