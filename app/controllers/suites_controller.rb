@@ -12,14 +12,6 @@ class SuitesController < ApplicationController
     render json:@json
   end
 
-  def create
-    attrs = get_suite_attrs(params)
-    @suite = Suite.new(attrs)
-    @suite.save
-    @json = JsonObject.new @suite
-    render json:@json
-  end
-
   def update
     @suite = Suite.find(params[:id])
     attrs = get_suite_attrs(params)

@@ -28,20 +28,6 @@ class SuitesControllerTest < ActionDispatch::IntegrationTest
     assert get_id(response) == id
   end
 
-  test 'create suite' do
-    suite = Suite.new
-    suite.name = 'name'
-    input = JsonObject.new suite
-    post '/suites', params:input.json
-    assert_response :success
-    assert_not_nil get_id(response)
-
-    attrs_in = get_attrs(input)
-    attrs_out = get_attrs(response)
-
-    assert attrs_out['name'] == attrs_in['name']
-  end
-
   test 'update suite' do
     get '/suites'
     suite = get_json(response)
