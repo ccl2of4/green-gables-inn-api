@@ -1,5 +1,9 @@
 class ReservationsController < ApplicationController
 
+  http_basic_authenticate_with name: Rails.configuration.username,
+    password: Rails.configuration.password,
+    except: :create
+
   def index
     @reservations = Reservation.all
     @json = JsonObject.new @reservations

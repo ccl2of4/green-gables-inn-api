@@ -5,6 +5,13 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
 
   test 'basic auth' do
 
+    # Reservations
+    get '/reservations'
+    assert_response :unauthorized
+
+    get '/reservations/1'
+    assert_response :unauthorized
+
     # Accepted reservations
     get '/accepted_reservations'
     assert_response :unauthorized
@@ -59,7 +66,7 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'get all reservations contains both unaccepted and accepted' do
-    get '/reservations'
+    get '/reservations', auth_headers
     assert_response :success
     json = get_json(response)
 
@@ -180,7 +187,7 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
     get '/unaccepted_reservations', auth_headers
     id = get_json(response)['data'][0]['id']
 
-    get "/reservations/#{id}"
+    get "/reservations/#{id}", auth_headers
     assert_response :success
     get "/unaccepted_reservations/#{id}", auth_headers
     assert_response :success
@@ -188,7 +195,7 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
     delete "/unaccepted_reservations/#{id}", auth_headers
     assert_response :no_content
 
-    get "/reservations/#{id}"
+    get "/reservations/#{id}", auth_headers
     assert_response :not_found
     get "/unaccepted_reservations/#{id}", auth_headers
     assert_response :not_found
@@ -198,13 +205,13 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
     get '/accepted_reservations', auth_headers
     id = get_json(response)['data'][0]['id']
 
-    get "/reservations/#{id}"
+    get "/reservations/#{id}", auth_headers
     assert_response :success
 
     delete "/unaccepted_reservations/#{id}", auth_headers
     assert_response :not_found
 
-    get "/reservations/#{id}"
+    get "/reservations/#{id}", auth_headers
     assert_response :success
 
   end
