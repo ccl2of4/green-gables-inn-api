@@ -134,6 +134,22 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test 'undo accepting a reservation' do
+    get '/unaccepted_reservations'
+    id = get_json(response)['data'][0]['id']
+
+    put "/accepted_reservations/#{id}"
+    assert_response :success
+
+    put "/unaccepted_reservations/#{id}"
+    assert_response :success
+
+    get "/unaccepted_reservations/#{id}"
+    assert_response :success
+    get "/accepted_reservations/#{id}"
+    assert_response :not_found
+  end
+
   test 'delete an unaccepted reservation' do
     get '/unaccepted_reservations'
     id = get_json(response)['data'][0]['id']

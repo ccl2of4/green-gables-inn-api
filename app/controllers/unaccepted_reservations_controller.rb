@@ -17,4 +17,12 @@ class UnacceptedReservationsController < ApplicationController
     @reservation.destroy
   end
 
+  def update
+    @reservation = Reservation.find(params[:id])
+    @reservation.update(accepted: false)
+    @reservation.save
+    @json = JsonObject.new @reservation
+    render json:@json
+  end
+
 end
