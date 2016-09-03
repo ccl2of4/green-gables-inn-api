@@ -5,14 +5,13 @@ class ClientsControllerTest < ActionDispatch::IntegrationTest
   test 'get clients' do
     get '/clients'
     assert_response :success
-    json = JSON.parse(response.body)
+    json = get_json(response)
     assert json['data'].length == 2
   end
 
   test 'check attributes' do
     get '/clients'
-    json = JSON.parse(response.body)
-    attrs = json['data'][0]['attributes']
+    attrs = get_json(response)['data'][0]['attributes']
     assert_not_nil attrs['full_name']
     assert_not_nil attrs['email_address']
     assert_not_nil attrs['phone_number']
@@ -23,7 +22,7 @@ class ClientsControllerTest < ActionDispatch::IntegrationTest
 
   test 'get client' do
     get '/clients'
-    id = JSON.parse(response.body)['data'][0]['id']
+    id = get_json(response)['data'][0]['id']
 
     get "/clients/#{id}"
     assert_response :success
