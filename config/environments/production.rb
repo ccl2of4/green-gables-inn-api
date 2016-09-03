@@ -1,6 +1,13 @@
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
+  # Do not allow default user/pwd values in production
+  config.username = ENV['USERNAME']
+  config.password  = ENV['PASSWORD']
+  if !config.username || !config.password
+    raise Exception, 'Cannot launch application in production without both username and password defined!'
+  end
+
   # Code is not reloaded between requests.
   config.cache_classes = true
 

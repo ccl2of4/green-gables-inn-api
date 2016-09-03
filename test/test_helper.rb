@@ -6,6 +6,13 @@ class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   fixtures :all
 
+  def auth_headers
+    username = Rails.configuration.username
+    password = Rails.configuration.password
+    {headers: {'HTTP_AUTHORIZATION' =>
+      "Basic #{Base64.encode64("#{username}:#{password}")}"}}
+  end
+
   def get_json(json)
     # Input data
     if json.is_a? JsonObject

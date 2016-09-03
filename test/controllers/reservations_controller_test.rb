@@ -3,6 +3,17 @@ require 'test_helper'
 # Has tests for reservations, accepted_reservations, and unaccepted_reservations
 class ReservationsControllerTest < ActionDispatch::IntegrationTest
 
+  test 'basic auth' do
+    get '/accepted_reservations'
+    assert_response :unauthorized
+
+    get '/accepted_reservations/1'
+    assert_response :unauthorized
+
+    put '/accepted_reservations/10'
+    assert_response :unauthorized
+  end
+
   test 'create reservation' do
     reservation = Reservation.new
     reservation.suite_id = '1'
@@ -75,7 +86,7 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'accepted_reservations only contains accepted reservations' do
-    get '/accepted_reservations'
+    get '/accepted_reservations', auth_headers
     assert_response :success
 
     json = get_json(response)
@@ -85,10 +96,10 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'find accepted reservation by id' do
-    get '/accepted_reservations'
+    get '/accepted_reservations', auth_headers
     id = get_json(response)['data'][0]['id']
 
-    get "/accepted_reservations/#{id}"
+    get "/accepted_reservations/#{id}", auth_headers
     assert_response :success
   end
 
@@ -96,7 +107,7 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
     get '/unaccepted_reservations'
     id = get_json(response)['data'][0]['id']
 
-    get "/accepted_reservations/#{id}"
+    get "/accepted_reservations/#{id}", auth_headers
     assert_response :not_found
   end
 
@@ -109,7 +120,7 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'accepted reservations dont show up as unaccepted' do
-    get '/accepted_reservations'
+    get '/accepted_reservations', auth_headers
     id = get_json(response)['data'][0]['id']
 
     get "/unaccepted_reservations/#{id}"
@@ -122,15 +133,15 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
 
     get "/unaccepted_reservations/#{id}"
     assert_response :success
-    get "/accepted_reservations/#{id}"
+    get "/accepted_reservations/#{id}", auth_headers
     assert_response :not_found
 
-    put "/accepted_reservations/#{id}"
+    put "/accepted_reservations/#{id}", auth_headers
     assert_response :success
 
     get "/unaccepted_reservations/#{id}"
     assert_response :not_found
-    get "/accepted_reservations/#{id}"
+    get "/accepted_reservations/#{id}", auth_headers
     assert_response :success
   end
 
@@ -138,7 +149,7 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
     get '/unaccepted_reservations'
     id = get_json(response)['data'][0]['id']
 
-    put "/accepted_reservations/#{id}"
+    put "/accepted_reservations/#{id}", auth_headers
     assert_response :success
 
     put "/unaccepted_reservations/#{id}"
@@ -146,7 +157,7 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
 
     get "/unaccepted_reservations/#{id}"
     assert_response :success
-    get "/accepted_reservations/#{id}"
+    get "/accepted_reservations/#{id}", auth_headers
     assert_response :not_found
   end
 
@@ -169,7 +180,7 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'cannot delete accepted reservation' do
-    get '/accepted_reservations'
+    get '/accepted_reservations', auth_headers
     id = get_json(response)['data'][0]['id']
 
     get "/reservations/#{id}"
