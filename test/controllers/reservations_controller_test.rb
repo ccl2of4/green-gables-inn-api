@@ -168,4 +168,19 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test 'cannot delete accepted reservation' do
+    get '/accepted_reservations'
+    id = get_json(response)['data'][0]['id']
+
+    get "/reservations/#{id}"
+    assert_response :success
+
+    delete "/unaccepted_reservations/#{id}"
+    assert_response :not_found
+
+    get "/reservations/#{id}"
+    assert_response :success
+
+  end
+
 end
