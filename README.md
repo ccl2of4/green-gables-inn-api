@@ -22,3 +22,8 @@
 ## Run Server
 
 * `rails server`
+*
+
+## HTTP Basic Auth
+
+This application uses HTTP Basic Auth to secure protected resources. The environment variables $USERNAME and $PASSWORD are used to define a global username and password for those resources. In non-production environments, if they are left unset they will default to "username" and "password" respectively.
