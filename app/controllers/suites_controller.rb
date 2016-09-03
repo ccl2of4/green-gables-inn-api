@@ -29,11 +29,6 @@ class SuitesController < ApplicationController
     render json:@json
   end
 
-  def destroy
-    @suite = Suite.find(params[:id])
-    @suite.destroy
-  end
-
   private def get_suite_attrs(params)
     params.require(:data)
           .require(:attributes)

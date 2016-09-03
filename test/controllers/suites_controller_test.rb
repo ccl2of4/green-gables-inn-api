@@ -55,15 +55,4 @@ class SuitesControllerTest < ActionDispatch::IntegrationTest
     assert get_attrs(response)['name'] == 'new name!'
   end
 
-  test 'destroy suite' do
-    get '/suites'
-    id = get_json(response)['data'][0]['id']
-
-    delete "/suites/#{id}"
-    assert_response :no_content
-
-    get "/suites/#{id}"
-    assert_response :not_found
-  end
-
 end
