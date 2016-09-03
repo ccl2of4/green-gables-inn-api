@@ -33,6 +33,7 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unauthorized
 
     delete '/unaccepted_reservations/10'
+    assert_response :unauthorized
 
   end
 
