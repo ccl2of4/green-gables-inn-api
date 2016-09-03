@@ -2,15 +2,23 @@ require 'test_helper'
 
 class ClientsControllerTest < ActionDispatch::IntegrationTest
 
-  test 'get clients' do
+  test 'basic auth' do
     get '/clients'
+    assert_response :unauthorized
+
+    get '/clients/1'
+    assert_response :unauthorized
+  end
+
+  test 'get clients' do
+    get '/clients', with_auth
     assert_response :success
     json = get_json(response)
     assert json['data'].length == 2
   end
 
   test 'check attributes' do
-    get '/clients'
+    get '/clients', with_auth
     attrs = get_json(response)['data'][0]['attributes']
     assert_not_nil attrs['full_name']
     assert_not_nil attrs['email_address']
@@ -21,10 +29,10 @@ class ClientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'get client' do
-    get '/clients'
+    get '/clients', with_auth
     id = get_json(response)['data'][0]['id']
 
-    get "/clients/#{id}"
+    get "/clients/#{id}", with_auth
     assert_response :success
     assert get_id(response) == id
   end

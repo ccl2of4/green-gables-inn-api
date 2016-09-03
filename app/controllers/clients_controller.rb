@@ -1,5 +1,9 @@
 class ClientsController < ApplicationController
 
+  http_basic_authenticate_with name: Rails.configuration.username,
+    password: Rails.configuration.password,
+    except: :create
+
   def index
     @clients = Client.all
     @json = JsonObject.new @clients
