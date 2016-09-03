@@ -6,11 +6,11 @@ class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   fixtures :all
 
-  def auth_headers
+  def with_auth(hash = Hash.new)
     username = Rails.configuration.username
     password = Rails.configuration.password
-    {headers: {'HTTP_AUTHORIZATION' =>
-      "Basic #{Base64.encode64("#{username}:#{password}")}"}}
+    hash.merge({headers: {'HTTP_AUTHORIZATION' =>
+      "Basic #{Base64.encode64("#{username}:#{password}")}"}})
   end
 
   def get_json(json)

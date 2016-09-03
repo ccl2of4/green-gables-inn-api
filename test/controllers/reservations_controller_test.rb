@@ -67,7 +67,7 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'get all reservations contains both unaccepted and accepted' do
-    get '/reservations', auth_headers
+    get '/reservations', with_auth
     assert_response :success
     json = get_json(response)
 
@@ -79,7 +79,7 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'unaccepted_reservations only contains unaccepted reservations' do
-    get '/unaccepted_reservations', auth_headers
+    get '/unaccepted_reservations', with_auth
     assert_response :success
 
     json = get_json(response)
@@ -100,7 +100,7 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
     post '/reservations', params:input.json
     id = get_id(response)
 
-    get '/unaccepted_reservations', auth_headers
+    get '/unaccepted_reservations', with_auth
     json = get_json(response)
     match = json['data'].find do |obj|
       return obj['id'] == id
@@ -109,7 +109,7 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'accepted_reservations only contains accepted reservations' do
-    get '/accepted_reservations', auth_headers
+    get '/accepted_reservations', with_auth
     assert_response :success
 
     json = get_json(response)
@@ -119,100 +119,100 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'find accepted reservation by id' do
-    get '/accepted_reservations', auth_headers
+    get '/accepted_reservations', with_auth
     id = get_json(response)['data'][0]['id']
 
-    get "/accepted_reservations/#{id}", auth_headers
+    get "/accepted_reservations/#{id}", with_auth
     assert_response :success
   end
 
   test 'unaccepted reservations dont show up as accepted' do
-    get '/unaccepted_reservations', auth_headers
+    get '/unaccepted_reservations', with_auth
     id = get_json(response)['data'][0]['id']
 
-    get "/accepted_reservations/#{id}", auth_headers
+    get "/accepted_reservations/#{id}", with_auth
     assert_response :not_found
   end
 
   test 'find unaccepted reservation by id' do
-    get '/unaccepted_reservations', auth_headers
+    get '/unaccepted_reservations', with_auth
     id = get_json(response)['data'][0]['id']
 
-    get "/unaccepted_reservations/#{id}", auth_headers
+    get "/unaccepted_reservations/#{id}", with_auth
     assert_response :success
   end
 
   test 'accepted reservations dont show up as unaccepted' do
-    get '/accepted_reservations', auth_headers
+    get '/accepted_reservations', with_auth
     id = get_json(response)['data'][0]['id']
 
-    get "/unaccepted_reservations/#{id}", auth_headers
+    get "/unaccepted_reservations/#{id}", with_auth
     assert_response :not_found
   end
 
   test 'accept a reservation' do
-    get '/unaccepted_reservations', auth_headers
+    get '/unaccepted_reservations', with_auth
     id = get_json(response)['data'][0]['id']
 
-    get "/unaccepted_reservations/#{id}", auth_headers
+    get "/unaccepted_reservations/#{id}", with_auth
     assert_response :success
-    get "/accepted_reservations/#{id}", auth_headers
+    get "/accepted_reservations/#{id}", with_auth
     assert_response :not_found
 
-    put "/accepted_reservations/#{id}", auth_headers
+    put "/accepted_reservations/#{id}", with_auth
     assert_response :success
 
-    get "/unaccepted_reservations/#{id}", auth_headers
+    get "/unaccepted_reservations/#{id}", with_auth
     assert_response :not_found
-    get "/accepted_reservations/#{id}", auth_headers
+    get "/accepted_reservations/#{id}", with_auth
     assert_response :success
   end
 
   test 'undo accepting a reservation' do
-    get '/unaccepted_reservations', auth_headers
+    get '/unaccepted_reservations', with_auth
     id = get_json(response)['data'][0]['id']
 
-    put "/accepted_reservations/#{id}", auth_headers
+    put "/accepted_reservations/#{id}", with_auth
     assert_response :success
 
-    put "/unaccepted_reservations/#{id}", auth_headers
+    put "/unaccepted_reservations/#{id}", with_auth
     assert_response :success
 
-    get "/unaccepted_reservations/#{id}", auth_headers
+    get "/unaccepted_reservations/#{id}", with_auth
     assert_response :success
-    get "/accepted_reservations/#{id}", auth_headers
+    get "/accepted_reservations/#{id}", with_auth
     assert_response :not_found
   end
 
   test 'delete an unaccepted reservation' do
-    get '/unaccepted_reservations', auth_headers
+    get '/unaccepted_reservations', with_auth
     id = get_json(response)['data'][0]['id']
 
-    get "/reservations/#{id}", auth_headers
+    get "/reservations/#{id}", with_auth
     assert_response :success
-    get "/unaccepted_reservations/#{id}", auth_headers
+    get "/unaccepted_reservations/#{id}", with_auth
     assert_response :success
 
-    delete "/unaccepted_reservations/#{id}", auth_headers
+    delete "/unaccepted_reservations/#{id}", with_auth
     assert_response :no_content
 
-    get "/reservations/#{id}", auth_headers
+    get "/reservations/#{id}", with_auth
     assert_response :not_found
-    get "/unaccepted_reservations/#{id}", auth_headers
+    get "/unaccepted_reservations/#{id}", with_auth
     assert_response :not_found
   end
 
   test 'cannot delete accepted reservation' do
-    get '/accepted_reservations', auth_headers
+    get '/accepted_reservations', with_auth
     id = get_json(response)['data'][0]['id']
 
-    get "/reservations/#{id}", auth_headers
+    get "/reservations/#{id}", with_auth
     assert_response :success
 
-    delete "/unaccepted_reservations/#{id}", auth_headers
+    delete "/unaccepted_reservations/#{id}", with_auth
     assert_response :not_found
 
-    get "/reservations/#{id}", auth_headers
+    get "/reservations/#{id}", with_auth
     assert_response :success
 
   end

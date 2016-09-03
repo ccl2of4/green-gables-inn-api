@@ -2,6 +2,11 @@ require 'test_helper'
 
 class SuitesControllerTest < ActionDispatch::IntegrationTest
 
+  test 'basic auth' do
+    put '/suites/1'
+    assert_response :unauthorized
+  end
+
   test 'get suites' do
     get '/suites'
     assert_response :success
@@ -36,7 +41,7 @@ class SuitesControllerTest < ActionDispatch::IntegrationTest
     suite['data']['attributes']['name'] = 'new name!'
     id = get_id(suite)
 
-    patch "/suites/#{id}", params:suite
+    patch "/suites/#{id}", with_auth(params:suite)
     assert_response :success
     assert get_attrs(response)['name'] == 'new name!'
   end

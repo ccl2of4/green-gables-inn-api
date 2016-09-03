@@ -1,5 +1,9 @@
 class SuitesController < ApplicationController
 
+  http_basic_authenticate_with name: Rails.configuration.username,
+    password: Rails.configuration.password,
+    except: [:index, :show]
+
   def index
     @suites = Suite.all
     @json = JsonObject.new @suites
