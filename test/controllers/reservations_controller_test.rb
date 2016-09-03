@@ -32,6 +32,18 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
       get_timestamp(attrs_in['end_date'])
   end
 
+  test 'get all reservations contains both unaccepted and accepted' do
+    get '/reservations'
+    assert_response :success
+    json = get_json(response)
+
+    unaccepted = json['data'].find {|obj| obj['attributes']['accepted'] == false}
+    accepted = json['data'].find {|obj| obj['attributes']['accepted'] == true}
+
+    assert_not_nil unaccepted
+    assert_not_nil accepted
+  end
+
   test 'unaccepted_reservations only contains unaccepted reservations' do
     get '/unaccepted_reservations'
     assert_response :success

@@ -1,5 +1,11 @@
 class ReservationsController < ApplicationController
 
+  def index
+    @reservations = Reservation.all
+    @json = JsonObject.new @reservations
+    render json:@json
+  end
+
   # Creates a new reservation with accepted=false
   def create
     attrs = get_reservation_attrs(params)
