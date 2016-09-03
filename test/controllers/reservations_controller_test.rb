@@ -84,4 +84,72 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test 'find accepted reservation by id' do
+    get '/accepted_reservations'
+    id = get_json(response)['data'][0]['id']
+
+    get "/accepted_reservations/#{id}"
+    assert_response :success
+  end
+
+  test 'unaccepted reservations dont show up as accepted' do
+    get '/unaccepted_reservations'
+    id = get_json(response)['data'][0]['id']
+
+    get "/accepted_reservations/#{id}"
+    assert_response :not_found
+  end
+
+  test 'find unaccepted reservation by id' do
+    get '/unaccepted_reservations'
+    id = get_json(response)['data'][0]['id']
+
+    get "/unaccepted_reservations/#{id}"
+    assert_response :success
+  end
+
+  test 'accepted reservations dont show up as unaccepted' do
+    get '/accepted_reservations'
+    id = get_json(response)['data'][0]['id']
+
+    get "/unaccepted_reservations/#{id}"
+    assert_response :not_found
+  end
+
+  test 'accept a reservation' do
+    get '/unaccepted_reservations'
+    id = get_json(response)['data'][0]['id']
+
+    get "/unaccepted_reservations/#{id}"
+    assert_response :success
+    get "/accepted_reservations/#{id}"
+    assert_response :not_found
+
+    put "/accepted_reservations/#{id}"
+    assert_response :success
+
+    get "/unaccepted_reservations/#{id}"
+    assert_response :not_found
+    get "/accepted_reservations/#{id}"
+    assert_response :success
+  end
+
+  test 'delete an unaccepted reservation' do
+    get '/unaccepted_reservations'
+    id = get_json(response)['data'][0]['id']
+
+    get "/reservations/#{id}"
+    assert_response :success
+    get "/unaccepted_reservations/#{id}"
+    assert_response :success
+
+    delete "/unaccepted_reservations/#{id}"
+    assert_response :no_content
+
+    get "/reservations/#{id}"
+    assert_response :not_found
+    get "/unaccepted_reservations/#{id}"
+    assert_response :not_found
+  end
+
 end

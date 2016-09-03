@@ -6,6 +6,12 @@ class ReservationsController < ApplicationController
     render json:@json
   end
 
+  def show
+    @reservation = Reservation.find(params[:id])
+    @json = JsonObject.new @reservation
+    render json:@json
+  end
+
   # Creates a new reservation with accepted=false
   def create
     attrs = get_reservation_attrs(params)
