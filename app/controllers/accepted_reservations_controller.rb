@@ -1,6 +1,5 @@
 class AcceptedReservationsController < ApplicationController
 
-  include ActionController::HttpAuthentication::Basic::ControllerMethods
   http_basic_authenticate_with name: Rails.configuration.username,
     password: Rails.configuration.password
 

@@ -1,5 +1,8 @@
 class UnacceptedReservationsController < ApplicationController
 
+  http_basic_authenticate_with name: Rails.configuration.username,
+    password: Rails.configuration.password
+
   def index
     @reservations = Reservation.where(accepted: false)
     @json = JsonObject.new @reservations
