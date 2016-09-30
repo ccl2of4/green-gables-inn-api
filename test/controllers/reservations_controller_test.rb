@@ -38,14 +38,21 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'create reservation' do
+    get '/suites'
+    suite_id = get_json(response)['data'][0]['id']
+
+    get '/clients', with_auth
+    client_id = get_json(response)['data'][0]['id']
+
     reservation = Reservation.new
-    reservation.suite_id = '1'
-    reservation.client_id = '1'
+    reservation.suite_id = suite_id
+    reservation.client_id = client_id
     reservation.start_date = DateTime.now()
     reservation.end_date = DateTime.now()
     reservation.number_of_people = '10'
     reservation.comment = 'a comment'
     input = JsonObject.new reservation
+
     post '/reservations', params:input.json
 
     assert_response :success
@@ -64,6 +71,37 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
       get_timestamp(attrs_in['start_date'])
     assert get_timestamp(attrs_out['end_date'])   ==
       get_timestamp(attrs_in['end_date'])
+  end
+
+  test 'cannot create reservation without client or suite' do
+    get '/suites'
+    suite_id = get_json(response)['data'][0]['id']
+
+    get '/clients', with_auth
+    client_id = get_json(response)['data'][0]['id']
+
+    reservation = Reservation.new
+    reservation.start_date = DateTime.now()
+    reservation.end_date = DateTime.now()
+    reservation.number_of_people = '10'
+    reservation.comment = 'a comment'
+
+    reservation.client_id = 'fake'
+    reservation.suite_id = 'also fake'
+    input = JsonObject.new reservation
+    post '/reservations', params:input.json
+    assert_response :not_found
+
+    reservation.client_id = client_id
+    input = JsonObject.new reservation
+    post '/reservations', params:input.json
+    assert_response :not_found
+
+    reservation.client_id = 'fake again'
+    reservation.suite_id = suite_id
+    input = JsonObject.new reservation
+    post '/reservations', params:input.json
+    assert_response :not_found
   end
 
   test 'get all reservations contains both unaccepted and accepted' do
@@ -89,9 +127,15 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'newly created reservation defaults to unaccepted' do
+    get '/suites'
+    suite_id = get_json(response)['data'][0]['id']
+
+    get '/clients', with_auth
+    client_id = get_json(response)['data'][0]['id']
+
     reservation = Reservation.new
-    reservation.suite_id = '1'
-    reservation.client_id = '1'
+    reservation.suite_id = suite_id
+    reservation.client_id = client_id
     reservation.start_date = DateTime.now()
     reservation.end_date = DateTime.now()
     reservation.number_of_people = '10'

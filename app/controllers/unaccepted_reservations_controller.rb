@@ -4,19 +4,19 @@ class UnacceptedReservationsController < ApplicationController
     password: Rails.configuration.password
 
   def index
-    @reservations = Reservation.where(accepted: false)
+    @reservations = Reservation.where('accepted IS NOT true')
     @json = JsonObject.new @reservations
     render json:@json
   end
 
   def show
-    @reservation = Reservation.where(accepted: false).find(params[:id])
+    @reservation = Reservation.where('accepted IS NOT true').find(params[:id])
     @json = JsonObject.new @reservation
     render json:@json
   end
 
   def destroy
-    @reservation = Reservation.where(accepted: false).find(params[:id])
+    @reservation = Reservation.where('accepted IS NOT true').find(params[:id])
     @reservation.destroy
   end
 

@@ -1,11 +1,13 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
+  id: 1
   full_name: client one
   email_address: clientone@email.com
   phone_number: 8675309
 
 two:
+  id: 2
   full_name: client two
   email_address: clientwo@email.com
   phone_number: 3098675

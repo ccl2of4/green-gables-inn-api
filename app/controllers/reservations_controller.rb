@@ -16,10 +16,15 @@ class ReservationsController < ApplicationController
     render json:@json
   end
 
-  # Creates a new reservation with accepted=false
+  # Creates a new reservation that will default to not accepted
   def create
     attrs = get_reservation_attrs(params)
     @reservation = Reservation.new(attrs)
+
+    # Throw 404 if the associated suite and client don't exist.
+    Suite.find(@reservation.suite_id)
+    Client.find(@reservation.client_id)
+
     @reservation.save
     @json = JsonObject.new @reservation
     render json:@json

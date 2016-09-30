@@ -1,9 +1,11 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
+  id: 1
   name: first suite
   price: 1
 
 two:
+  id: 2
   name: second suite
   price: 2
