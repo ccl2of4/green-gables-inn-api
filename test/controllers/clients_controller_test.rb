@@ -3,22 +3,22 @@ require 'test_helper'
 class ClientsControllerTest < ActionDispatch::IntegrationTest
 
   test 'basic auth' do
-    get '/clients'
+    get clients_url
     assert_response :unauthorized
 
-    get '/clients/1'
+    get client_url(client_id=1)
     assert_response :unauthorized
   end
 
   test 'get clients' do
-    get '/clients', with_auth
+    get clients_url, with_auth
     assert_response :success
     json = get_json(response)
     assert json['data'].length == 2
   end
 
   test 'check attributes' do
-    get '/clients', with_auth
+    get clients_url, with_auth
     attrs = get_json(response)['data'][0]['attributes']
     assert_not_nil attrs['full_name']
     assert_not_nil attrs['email_address']
@@ -29,10 +29,10 @@ class ClientsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'get client' do
-    get '/clients', with_auth
+    get clients_url, with_auth
     id = get_json(response)['data'][0]['id']
 
-    get "/clients/#{id}", with_auth
+    get client_url(client_id=id), with_auth
     assert_response :success
     assert get_id(response) == id
   end
@@ -43,7 +43,7 @@ class ClientsControllerTest < ActionDispatch::IntegrationTest
     client.email_address = 'email'
     client.phone_number = 'phone'
     input = JsonObject.new client
-    post '/clients', params:input.json
+    post clients_url, params:input.json
     assert_response :success
 
     id = get_id(response)
@@ -62,7 +62,7 @@ class ClientsControllerTest < ActionDispatch::IntegrationTest
     client.email_address = 'email'
     client.phone_number = 'phone'
     input = JsonObject.new client
-    post '/clients', params:input.json
+    post clients_url, params:input.json
     assert_response :bad_request
     assert get_error_detail(response, 0).include? 'full_name'
 
@@ -70,7 +70,7 @@ class ClientsControllerTest < ActionDispatch::IntegrationTest
     client.full_name = 'name'
     client.phone_number = 'phone'
     input = JsonObject.new client
-    post '/clients', params:input.json
+    post clients_url, params:input.json
     assert_response :bad_request
     assert get_error_detail(response, 0).include? 'email_address'
 
@@ -78,7 +78,7 @@ class ClientsControllerTest < ActionDispatch::IntegrationTest
     client.full_name = 'name'
     client.email_address = 'email'
     input = JsonObject.new client
-    post '/clients', params:input.json
+    post clients_url, params:input.json
     assert_response :bad_request
     assert get_error_detail(response, 0).include? 'phone_number'
   end
