@@ -23,6 +23,7 @@ test:
 staging:
   <<: *default
   database: green_gables_inn_staging
+  username: gg-api
 
 production:
   <<: *default
