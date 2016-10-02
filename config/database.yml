@@ -20,11 +20,9 @@ test:
   <<: *default
   database: green_gables_inn_test
 
-heroku:
-  adapter: postgresql
-  host: localhost
-  username: user
-  database: app-dev
+staging:
+  <<: *default
+  database: green_gables_inn_staging
 
 production:
   <<: *default
