@@ -22,7 +22,6 @@
 ## Run Server
 
 * `rails server`
-*
 
 ## HTTP Basic Auth
 
