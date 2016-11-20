@@ -41,7 +41,7 @@ class SuitesControllerTest < ActionDispatch::IntegrationTest
     suite['data']['attributes']['name'] = 'new name!'
     id = get_id(suite)
 
-    patch suite_url(suite_id=id), with_auth(params:suite)
+    patch suite_url(suite_id=id), with_auth(hash:{params:suite})
     assert_response :success
     assert get_attrs(response)['name'] == 'new name!'
   end
