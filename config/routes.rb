@@ -5,7 +5,5 @@ Rails.application.routes.draw do
     resources :suites
     resources :clients
     resources :reservations
-    resources :accepted_reservations
-    resources :unaccepted_reservations
   end
 end
