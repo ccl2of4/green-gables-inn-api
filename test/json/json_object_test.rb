@@ -32,4 +32,27 @@ class JsonObjectTest < ActiveSupport::TestCase
 
   end
 
+  test 'relationships' do
+    reservation = Reservation.new
+    reservation.start_date = DateTime.now()
+    reservation.end_date = DateTime.now()
+    reservation.number_of_people = '10'
+    reservation.comment = 'a comment'
+
+    suite = Suite.new
+    suite.id = 1
+
+    client = Client.new
+    client.id = 2
+
+    json = JsonObject.new(reservation)
+      .relationship('suite', suite)
+      .relationship('client', client)
+      .json
+
+    assert json['data']['attributes']['comment'] = 'a comment'
+    assert json['data']['relationships']['suite']['data']['id'] == 1
+    assert json['data']['relationships']['client']['data']['id'] == 2
+  end
+
 end
