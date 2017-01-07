@@ -99,6 +99,39 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
     assert_not_nil accepted
   end
 
+  test 'get all reservations is in correct format' do
+    get reservations_url, with_auth
+    assert_response :success
+    json = get_json(response)
+    json['data'].each do |obj|
+      assert !obj['attributes'].has_key?('client_id')
+      assert !obj['attributes'].has_key?('suite_id')
+
+      # TODO
+      #assert obj.has_key?('relationships')
+      #assert obj['relationships'].has_key?('client')
+      #assert obj['relationships'].has_key?('suite')
+      #assert obj['relationships']['client']['data'].has_key?('id')
+      #assert obj['relationships']['suite']['data'].has_key?('id')
+    end
+  end
+
+  test 'get reservation is in correct format' do
+    get reservations_url, with_auth
+    reservation_id = get_json(response)['data'][0]['id']
+
+    get reservation_url(reservation_id), with_auth
+
+    json = get_json(response)
+    assert !json['data']['attributes'].has_key?('client_id')
+    assert !json['data']['attributes'].has_key?('suite_id')
+    assert json['data'].has_key?('relationships')
+    assert json['data']['relationships'].has_key?('client')
+    assert json['data']['relationships'].has_key?('suite')
+    assert json['data']['relationships']['client']['data'].has_key?('id')
+    assert json['data']['relationships']['suite']['data'].has_key?('id')
+  end
+
   test 'unaccepted_reservations only contains unaccepted reservations' do
     get reservations_url, with_auth(hash:{params:{accepted:false}})
     assert_response :success

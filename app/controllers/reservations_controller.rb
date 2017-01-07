@@ -13,13 +13,19 @@ class ReservationsController < ApplicationController
     else
       @reservations = Reservation.all
     end
-    @json = JsonObject.new @reservations
+    @json = JsonObject.new(@reservations, exclude=['client_id', 'suite_id'])
     render json:@json
   end
 
   def show
     @reservation = Reservation.find(params[:id])
-    @json = JsonObject.new @reservation
+    @client      = Client.find(@reservation.client_id)
+    @suite       = Suite.find(@reservation.suite_id)
+
+    @json = JsonObject.new(@reservation, exclude=['client_id', 'suite_id'])
+      .relationship('client', @client)
+      .relationship('suite', @suite)
+
     render json:@json
   end
 
