@@ -34,7 +34,10 @@ class ReservationsController < ApplicationController
 
   # Creates a new reservation that will default to not accepted
   def create
-    attrs = get_reservation_attrs(params)
+    attrs              = get_reservation_attrs(params)
+    attrs['client_id'] = get_client_relation(params)['id']
+    attrs['suite_id']  = get_suite_relation(params)['id']
+
     @reservation = Reservation.new(attrs)
 
     # Throw 404 if the associated suite and client don't exist.
@@ -42,7 +45,14 @@ class ReservationsController < ApplicationController
     Client.find(@reservation.client_id)
 
     @reservation.save
-    @json = JsonObject.new @reservation
+
+    @client = Client.find(@reservation.client_id)
+    @suite = Suite.find(@reservation.suite_id)
+
+    @json = JsonObject.new(@reservation)
+      .relationship('client', @client)
+      .relationship('suite', @suite)
+
     render json:@json
   end
 
@@ -61,8 +71,26 @@ class ReservationsController < ApplicationController
   private def get_reservation_attrs(params)
     params.require(:data)
           .require(:attributes)
-          .permit([:suite_id, :client_id, :start_date, :end_date, :number_of_people, :comment])
-          .tap {|attrs| attrs.require([:suite_id, :client_id, :start_date, :end_date, :number_of_people])}
+          .permit([:start_date, :end_date, :number_of_people, :comment])
+          .tap {|attrs| attrs.require([:start_date, :end_date, :number_of_people])}
+  end
+
+  private def get_client_relation(param)
+    params.require(:data)
+          .require(:relationships)
+          .require(:client)
+          .require(:data)
+          .permit([:id])
+          .tap {|attrs| attrs.require([:id])}
+  end
+
+  private def get_suite_relation(param)
+    params.require(:data)
+          .require(:relationships)
+          .require(:suite)
+          .require(:data)
+          .permit([:id])
+          .tap {|attrs| attrs.require([:id])}
   end
 
   private def get_updatable_reservation_attrs(params)
