@@ -53,6 +53,8 @@ class ReservationsControllerTest < ActionDispatch::IntegrationTest
 
     assert json_out['data']['relationships']['client']['data']['id'] == client_id
     assert json_out['data']['relationships']['suite']['data']['id']  == client_id
+    assert !json_out['data']['attributes'].has_key?('suite_id')
+    assert !json_out['data']['attributes'].has_key?('client_id')
   end
 
   test 'cannot create reservation without client or suite' do

@@ -49,7 +49,7 @@ class ReservationsController < ApplicationController
     @client = Client.find(@reservation.client_id)
     @suite = Suite.find(@reservation.suite_id)
 
-    @json = JsonObject.new(@reservation)
+    @json = JsonObject.new(@reservation, exclude=['client_id', 'suite_id'])
       .relationship('client', @client)
       .relationship('suite', @suite)
 
