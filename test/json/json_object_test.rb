@@ -15,6 +15,20 @@ class JsonObjectTest < ActiveSupport::TestCase
     assert json['data']['attributes']['price'] == 450
   end
 
+  test 'single object, exclude attribute' do
+    suite = Suite.new
+    suite.id = 1
+    suite.name = 'name'
+    suite.price = 450
+
+    json = JsonObject.new(suite, exclude=['price'].to_set).json
+    assert json['data'].kind_of? Hash
+    assert json['data']['id'] == 1
+    assert json['data']['attributes'].kind_of? Hash
+    assert json['data']['attributes']['name'] == 'name'
+    assert !json['data']['attributes'].has_key?('price')
+  end
+
   test 'collection' do
     suites = (1..5).map do |i|
       suite = Suite.new
