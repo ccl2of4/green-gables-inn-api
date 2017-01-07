@@ -46,14 +46,11 @@ class ReservationsController < ApplicationController
 
     @reservation = Reservation.new(attrs)
 
-    # Throw 404 if the associated suite and client don't exist.
-    Suite.find(@reservation.suite_id)
-    Client.find(@reservation.client_id)
+    # Throws 404 if the associated suite and client don't exist.
+    @client = Client.find(@reservation.client_id)
+    @suite  = Suite.find(@reservation.suite_id)
 
     @reservation.save
-
-    @client = Client.find(@reservation.client_id)
-    @suite = Suite.find(@reservation.suite_id)
 
     @json = JsonObject.new(@reservation, exclude=['client_id', 'suite_id'])
       .relationship('client', @client)
